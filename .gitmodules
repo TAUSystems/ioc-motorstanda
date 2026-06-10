@@ -1,3 +1,4 @@
 [submodule "ibek-support"]
 	path = ibek-support
 	url = https://github.com/TAUSystems/ibek-support
+	branch = dev/motorStanda
