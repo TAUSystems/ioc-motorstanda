@@ -1,6 +1,6 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
 _commit: 4.5.3
-_src_path: gh:epics-containers/ioc-template
+_src_path: https://github.com/epics-containers/ioc-template
 description: Generic IOC for the motorStanda (https://github.com/MichaS-git/motorStanda)
     module
 git_platform: github.com
