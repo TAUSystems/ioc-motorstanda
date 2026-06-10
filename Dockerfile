@@ -35,6 +35,23 @@ RUN ansible.sh pvlogging
 COPY ibek-support/autosave/ autosave
 RUN ansible.sh autosave
 
+COPY ibek-support/asyn/ asyn/
+RUN ansible.sh asyn
+
+COPY ibek-support/motor/ motor/
+RUN ansible.sh motor
+
+COPY downloads/libximc7_3.0.3-1_amd64.deb /tmp/libximc7.deb
+COPY downloads/libximc7-dev_3.0.3-1_amd64.deb /tmp/libximc7-dev.deb
+RUN apt-get update \
+    && apt-get install -y /tmp/libximc7.deb \
+    && apt-get install -y /tmp/libximc7-dev.deb \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /tmp/libximc7*.deb
+
+COPY ibek-support/motorStanda motorStanda
+RUN ansible.sh motorStanda
+
 # get the ioc source and build it
 COPY ioc ${SOURCE_FOLDER}/ioc
 RUN ansible.sh ioc
