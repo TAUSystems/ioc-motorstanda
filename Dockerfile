@@ -46,6 +46,7 @@ COPY downloads/libximc7-dev_3.0.3-1_amd64.deb /tmp/libximc7-dev.deb
 RUN apt-get update \
     && apt-get install -y /tmp/libximc7.deb \
     && apt-get install -y /tmp/libximc7-dev.deb \
+    && ldconfig \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /tmp/libximc7*.deb
 
