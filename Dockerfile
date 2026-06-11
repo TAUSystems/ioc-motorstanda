@@ -70,6 +70,13 @@ FROM ${RUNTIME} AS runtime
 # get runtime assets from the preparation stage
 COPY --from=runtime_prep /assets /
 
+COPY downloads/libximc7_3.0.3-1_amd64.deb /tmp/libximc7.deb
+RUN apt-get update \
+    && apt-get install -y /tmp/libximc7.deb \
+    && ldconfig \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /tmp/libximc7.deb
+
 # install runtime system dependencies, collected from install.sh scripts
 RUN ibek support apt-install-runtime-packages
 
