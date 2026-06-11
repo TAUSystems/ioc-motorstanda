@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=/tmp/ibek.ioc.schema.json
+
+ioc_name: "bl01d-motorstanda-01"
+description: "Standa 8SMC5-USB Motion Controller TEST IOC"
+
+entities:
+  # Set the timezone for the IOC
+  - type: epics.EpicsEnvSet
+    name: EPICS_TZ
+    value: "GMT0BST"
+
+  # Include basic IOC monitoring statistics
+  - type: devIocStats.iocAdminSoft
+    IOC: "{{ ioc_name | upper }}"
+
+  # asyn.AsynSerial entity
+  - type: asyn.AsynSerial
+    name: "serial1"
+    port: "/dev/ttyACM0"
+    baud: 9600
+    input_eos: "\r"
+    output_eos: "\r"
+
+  # Instantiate the Standa controller on the ASYN port configured above
+  - type: motorStanda.StandaCreateController
+    controllerName: "standa_1"
+    asynPort: "serial1"
+    numAxes: 2
+    movingPollPeriod: 100
+    idlePollPeriod: 500
+
+  # Instantiate the first axis (m1) mapping to address 0
+  - type: motorStanda.standaAxis
+    controller: "standa_1"
+    P: "BL01T-MO-STANDA-01:"
+    M: "m1"
+    ADDR: 0
+    DESC: "Standa Axis X"
+    EGU: "mm"
+    VMAX: 15.0
+    VELO: 5.0
+    VBAS: 0.1
+    ACCL: 0.1
+    BDST: 0
+    BVEL: 1.0
+    BACC: 2.0
+    MRES: 0.000025
+    PREC: 5
+
+  # Instantiate the second axis (m2) mapping to address 1
+  - type: motorStanda.standaAxis
+    controller: "standa_1"
+    P: "BL01T-MO-STANDA-01:"
+    M: "m2"
+    ADDR: 1
+    DESC: "Standa Axis Y"
+    EGU: "mm"
+    VMAX: 15.0
+    VELO: 5.0
+    VBAS: 0.1
+    ACCL: 0.1
+    BDST: 0
+    BVEL: 1.0
+    BACC: 2.0
+    MRES: 0.000025
+    PREC: 5
