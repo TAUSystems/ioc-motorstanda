@@ -1,25 +1,24 @@
 # yaml-language-server: $schema=/tmp/ibek.ioc.schema.json
 
-ioc_name: "BL01D-MOTORSTANDA-01"
-description: "Standa 8SMC5-USB Motion Controller TEST IOC"
+ioc_name: "{{ _global.get_env('IOC_NAME') }}"
+description: "Standa controller that controls the H-tilt and V-tilt of the pointing into the OAP"
 
 entities:
-  # Set the timezone for the IOC
   - type: epics.EpicsEnvSet
     name: EPICS_TZ
-    value: "GMT0BST"
+    value: GMT0BST
 
-  # Include basic IOC monitoring statistics
   - type: devIocStats.iocAdminSoft
     IOC: "{{ ioc_name | upper }}"
 
-  # Instantiate motorUtil for the allstop & alldone features
   - type: motor.motorUtil
-    P: "BL01D-MOTORSTANDA-01:"
+    P: "LaserTransport:PreOAPPointing:H:"
 
-  # ASYN serial port
+  - type: motor.motorUtil
+    P: "LaserTransport:PreOAPPointing:V:"
+
   - type: asyn.AsynSerial
-    name: "serial1"
+    name: "serial_preoap_point_h"
     port: "/dev/ttyACM0"
     baud: 9600
     bits: 8
@@ -29,21 +28,37 @@ entities:
     input_eos: "\r"
     output_eos: "\r"
 
-  # Instantiate the Standa controller on the ASYN port configured above
+  - type: asyn.AsynSerial
+    name: "serial_preoap_point_v"
+    port: "/dev/ttyACM1"
+    baud: 9600
+    bits: 8
+    parity: N
+    stop: 1
+    crtscts: N
+    input_eos: "\r"
+    output_eos: "\r"
+
   - type: motorStanda.StandaCreateController
-    controllerName: "standa_1"
-    asynPort: "serial1"
-    numAxes: 2
+    controllerName: "standa_preoap_point_h"
+    asynPort: "serial_preoap_point_h"
+    numAxes: 1
     movingPollPeriod: 100
     idlePollPeriod: 500
 
-  # Instantiate the first axis (m1) mapping to address 0
+  - type: motorStanda.StandaCreateController
+    controllerName: "standa_preoap_point_v"
+    asynPort: "serial_preoap_point_v"
+    numAxes: 1
+    movingPollPeriod: 100
+    idlePollPeriod: 500
+
   - type: motorStanda.standaAxis
-    controller: "standa_1"
-    P: "BL01D-MOTORSTANDA-01:"
-    M: "m1"
+    controller: "standa_preoap_point_h"
+    P: "LaserTransport:PreOAPPointing:"
+    M: "H"
     ADDR: 0
-    DESC: "Standa Axis X"
+    DESC: "Pre-OAP Point - Horizontal Tilt"
     EGU: "mm"
     VMAX: 15.0
     VELO: 5.0
@@ -55,13 +70,12 @@ entities:
     MRES: 0.000025
     PREC: 5
 
-  # Instantiate the second axis (m2) mapping to address 1
   - type: motorStanda.standaAxis
-    controller: "standa_1"
-    P: "BL01D-MOTORSTANDA-01:"
-    M: "m2"
+    controller: "standa_preoap_point_v"
+    P: "LaserTransport:PreOAPPointing:"
+    M: "V"
     ADDR: 1
-    DESC: "Standa Axis Y"
+    DESC: "Pre-OAP Point - Vertical Tilt"
     EGU: "mm"
     VMAX: 15.0
     VELO: 5.0
